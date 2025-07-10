@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from typing import TypedDict, List, Dict, Any, Optional
+from typing import Annotated, TypedDict, List, Dict, Any, Optional
 from langgraph.graph import StateGraph, START, END
+from langgraph.graph.message import add_messages, MessagesState
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage
 
-from typing import Any, Dict, TypedDict
+from typing import TypedDict
 
 from langgraph.graph import StateGraph
 
@@ -20,13 +21,13 @@ class Email(TypedDict):
     body: str
 
 
-class EmailState(TypedDict):
+class EmailState(MessagesState):
     email: Email
     email_category: Optional[str]
     spam_reason: Optional[str]
     is_spam: Optional[bool]
     email_draft: Optional[str]
-    messages: List[Dict[str, Any]]
+    messages: Annotated[list, add_messages]
 
 
 model = ChatOpenAI(temperature=0)
@@ -148,21 +149,21 @@ def route_email(state: EmailState) -> str:
 
 email_graph = (
     StateGraph(EmailState)
-        .add_node("read_email", read_email)
-        .add_node("classify_email", classify_email)
-        .add_node("handle_spam", handle_spam)
-        .add_node("draft_response", draft_response)
-        .add_node("notify_mr_hugg", notify_mr_hugg)
-        .add_edge(START, "read_email")
-        .add_edge("read_email", "classify_email")
-        .add_conditional_edges(
-            "classify_email",
-            route_email,
-            {"spam": "handle_spam", "legitimate": "draft_response"},
-        )
-        .add_edge("handle_spam", END)
-        .add_edge("draft_response", "notify_mr_hugg")
-        .add_edge("notify_mr_hugg", END)
+    .add_node("read_email", read_email)
+    .add_node("classify_email", classify_email)
+    .add_node("handle_spam", handle_spam)
+    .add_node("draft_response", draft_response)
+    .add_node("notify_mr_hugg", notify_mr_hugg)
+    .add_edge(START, "read_email")
+    .add_edge("read_email", "classify_email")
+    .add_conditional_edges(
+        "classify_email",
+        route_email,
+        {"spam": "handle_spam", "legitimate": "draft_response"},
+    )
+    .add_edge("handle_spam", END)
+    .add_edge("draft_response", "notify_mr_hugg")
+    .add_edge("notify_mr_hugg", END)
 )
 
 compiled_graph = email_graph.compile(name="Hugging face Email Assistant")
