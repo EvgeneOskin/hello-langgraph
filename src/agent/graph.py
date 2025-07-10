@@ -148,7 +148,7 @@ def route_email(state: EmailState) -> str:
 
 
 email_graph = (
-    StateGraph(EmailState)
+    StateGraph(EmailState, input_schema=MessagesState)
     .add_node("read_email", read_email)
     .add_node("classify_email", classify_email)
     .add_node("handle_spam", handle_spam)
