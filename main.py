@@ -1,6 +1,8 @@
 from langgraph_sdk import get_client
 import asyncio
 
+from agent import graph
+
 client = get_client(url="http://localhost:2024")
 
 async def main():
@@ -19,3 +21,8 @@ async def main():
         print("\n\n")
 
 asyncio.run(main())
+
+from IPython.display import Image, display
+# Show the butler's thought process
+display(Image(graph.get_graph(xray=True).draw_mermaid_png()))
+
