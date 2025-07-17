@@ -5,12 +5,16 @@ name = "pypi"
 
 [packages]
 agent = {file = ".", editable = true}
-langgraph = "*"
+langgraph = "0.5.2"
 langchain-openai = "*"
 black = "*"
+langfuse = "*"
+langchain = "*"
+langgraph-cli = {extras = ["inmem"], version = "*"}
+langgraph-api = "0.2.94"
 
 [dev-packages]
 ipython = "*"
 
 [requires]
-python_version = "3.10"
+python_version = "3.13"

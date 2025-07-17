@@ -13,6 +13,8 @@ from typing import TypedDict
 
 from langgraph.graph import StateGraph
 
+from langfuse.langchain import CallbackHandler
+
 
 class Configuration(TypedDict):
     my_configurable_param: str
@@ -141,5 +143,8 @@ builder.add_conditional_edges(
     tools_condition,
 )
 builder.add_edge("tools", "assistant")
-compiled_graph = builder.compile()
+
+langfuse_handler = CallbackHandler()
+
+compiled_graph = builder.compile().with_config({"callbacks": [langfuse_handler]})
 
